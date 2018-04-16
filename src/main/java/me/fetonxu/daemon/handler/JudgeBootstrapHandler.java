@@ -38,22 +38,23 @@ public class JudgeBootstrapHandler implements HttpRequestHandler {
             String rawString = new String(ByteBufUtil.getBytes(requestBody), "utf-8");
             JSONObject jsonObject = JSONObject.parseObject(rawString);
             List<String> list = new ArrayList<String>(){{
-                jsonObject.getString("mapFile");
-                jsonObject.getString("noOfTanks");
-                jsonObject.getString("tankSpeed");
-                jsonObject.getString("tankHP");
-                jsonObject.getString("tankScore");
-                jsonObject.getString("flagScore");
-                jsonObject.getString("maxRound");
-                jsonObject.getString("roundTimeout");
-                jsonObject.getString("playerAAddres");
-                jsonObject.getString("playerBAddres");
-                jsonObject.getString("aId");
-                jsonObject.getString("bId");
-                jsonObject.getString("timestamp");
+                add(jsonObject.getString("mapFile"));
+                add(jsonObject.getString("noOfTanks"));
+                add(jsonObject.getString("tankSpeed"));
+                add(jsonObject.getString("shellSpeed"));
+                add(jsonObject.getString("tankHP"));
+                add(jsonObject.getString("tankScore"));
+                add(jsonObject.getString("flagScore"));
+                add(jsonObject.getString("maxRound"));
+                add(jsonObject.getString("roundTimeout"));
+                add(jsonObject.getString("playerAAddress"));
+                add(jsonObject.getString("playerBAddress"));
+                add(jsonObject.getString("aId"));
+                add(jsonObject.getString("bId"));
+                add(jsonObject.getString("timestamp"));
             }};
-
-            runJudge((String[]) list.toArray());
+            String[] strList = new String[list.size()];
+            runJudge( list.toArray(strList) );
             result = "1;submitted";
         }catch (Exception e){
             result = "0;error occurred";
