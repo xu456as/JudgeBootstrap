@@ -1,6 +1,7 @@
 package ele.me.hackathon.tank;
 
 import ele.me.hackathon.tank.player.PlayerServer;
+import me.fetonxu.util.Config;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.InputStreamEntity;
@@ -75,7 +76,15 @@ public class GameEngine {
         int roundTimeout = Integer.parseInt(args[8]);
         playerAAddres = args[9];
         playerBAddres = args[10];
+        int aPort = Integer.parseInt(playerAAddres.split(":")[1]);
+        int bPort = Integer.parseInt(playerBAddres.split(":")[1]);
+        long aId = Long.parseLong(args[11]);
+        long bId = Long.parseLong(args[12]);
+        long timestamp = Long.parseLong(args[13]);
         this.gameOptions = new GameOptions(noOfTanks, tankSpeed, shellSpeed, tankHP, tankScore, flagScore, maxRound, roundTimeout);
+
+        result.setMetaInfo(timestamp, aId, aPort, bId, bPort);
+
         System.out.println("Parameters parsed. " + this.gameOptions);
     }
 
@@ -207,7 +216,7 @@ public class GameEngine {
     }
 
     void reportResult() {
-        String resUrl = env.get("WAR_CALLBACK_URL");
+        String resUrl = Config.getString("result.post.url");
         System.out.println("WAR_CALLBACK_URL=" + resUrl);
 
         HttpPost post = new HttpPost(resUrl);
