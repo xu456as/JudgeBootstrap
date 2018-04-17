@@ -216,7 +216,7 @@ public class GameEngine {
     }
 
     void reportResult() {
-        String resUrl = Config.getString("result.post.url");
+        String resUrl = System.getProperty("HOST_URL", "http://localhost:8999/ping");
         System.out.println("WAR_CALLBACK_URL=" + resUrl);
 
         HttpPost post = new HttpPost(resUrl);
