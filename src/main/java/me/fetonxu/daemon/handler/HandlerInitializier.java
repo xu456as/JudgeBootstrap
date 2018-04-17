@@ -9,7 +9,8 @@ public class HandlerInitializier implements ChannelHandlerAppender {
     @Override public void handle(Channel channel) {
         HttpServerUrlHandler mainHandler = new HttpServerUrlHandler();
 
-        mainHandler.register("/run_judge", new JudgeBootstrapHandler());
+        mainHandler.register("/run_judge", new JudgeBootstrapHandler())
+            .register("/ping", new PingHandler());
 
         channel.pipeline().addLast(mainHandler);
     }
