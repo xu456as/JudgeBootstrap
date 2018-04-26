@@ -10,7 +10,7 @@ public class HandlerInitializier implements ChannelHandlerAppender {
         HttpServerUrlHandler mainHandler = new HttpServerUrlHandler();
 
         mainHandler.register("/run_judge", new JudgeBootstrapHandler())
-            .register("/ping", new PingHandler());
+            .register("/ping", new PingHandler()).register("/upload_map", new MapUploadHandler());
 
         channel.pipeline().addLast(mainHandler);
     }

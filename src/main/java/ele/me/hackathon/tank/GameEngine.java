@@ -12,10 +12,7 @@ import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransportException;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -39,7 +36,10 @@ public class GameEngine {
     private GameOptions gameOptions;
     private Environment env = new Environment();
 
-    GameResult result = new GameResult();
+    private GameResult result = new GameResult();
+
+    private String uploadPath = Config.getString("log.upload.path");
+    private PrintStream printStream;
 
     public static class Environment {
         public String get(String name) {
@@ -47,20 +47,22 @@ public class GameEngine {
         }
     }
 
-    public static void main(String[] args) throws TTransportException, InterruptedException {
-        System.out.println("Game starts at " + LocalDateTime.now());
+    public static void main(String[] args) throws TTransportException, InterruptedException, FileNotFoundException {
+
         GameEngine engine = new GameEngine();
         engine.parseArgs(args);
+        System.out.println("Game starts at " + LocalDateTime.now());
         engine.startGame();
         System.out.println("Game ends at " + LocalDateTime.now());
         //do not exit the main thread cause the judge process needs me to alive
         Thread.sleep(1000 * 60 * 10);
+        engine.endGame();
     }
 
     public GameEngine() {
     }
 
-    void parseArgs(String[] args) {
+    void parseArgs(String[] args) throws FileNotFoundException{
         mapFile = args[0];
         int noOfTanks = Integer.parseInt(args[1]);
         if (noOfTanks > 5) {
@@ -83,7 +85,11 @@ public class GameEngine {
         long timestamp = Long.parseLong(args[13]);
         this.gameOptions = new GameOptions(noOfTanks, tankSpeed, shellSpeed, tankHP, tankScore, flagScore, maxRound, roundTimeout);
 
-        result.setMetaInfo(timestamp, aId, aPort, bId, bPort);
+
+        result.setMetaInfo(timestamp, mapFile, aId, aPort, bId, bPort);
+
+        printStream = new PrintStream(uploadPath + "/" + result.getMetaInfo());
+        System.setOut(printStream);
 
         System.out.println("Parameters parsed. " + this.gameOptions);
     }
@@ -93,9 +99,13 @@ public class GameEngine {
         connectToPlayers();
         play();
     }
+    private void endGame(){
+        printStream.flush();
+        printStream.close();
+    }
 
     private void initGameStateMachine() {
-        map = loadMap(mapFile);
+        map = loadMap("maps/" + mapFile);
         printMap(map);
         Map<Integer, Tank> tanks = generateTanks();
         this.players = assignTankToPlayers(tanks);
@@ -202,12 +212,12 @@ public class GameEngine {
         }
 
         if (scores.get(playerAAddres) > scores.get(playerBAddres)) {
-            result.setResult("win");
+            result.setResult("1");
             result.setWin(playerAAddres);
         } else if (scores.get(playerAAddres) == scores.get(playerBAddres)) {
-            result.setResult("draw");
+            result.setResult("0");
         } else {
-            result.setResult("win");
+            result.setResult("2");
             result.setWin(playerBAddres);
         }
         result.setState(playerAAddres + ": " + scores.get(playerAAddres) + "," + playerBAddres + ": " + scores.get(playerBAddres));

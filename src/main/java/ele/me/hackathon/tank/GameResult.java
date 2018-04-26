@@ -15,8 +15,8 @@ public class GameResult {
         return metaInfo;
     }
 
-    public void setMetaInfo(long timestamp, long aId, int aPort, long bId, int bPort){
-        this.metaInfo = String.format("%d|%d|%d|%d|%d", timestamp, aId, aPort, bId, bPort);
+    public void setMetaInfo(long timestamp,String mapName, long aId, int aPort, long bId, int bPort){
+        this.metaInfo = String.format("%d|%s|%d|%d|%d|%d", timestamp,mapName, aId, aPort, bId, bPort);
     }
 
     public String getResult() {

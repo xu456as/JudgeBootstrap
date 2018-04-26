@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -69,7 +70,7 @@ public class GameEngineTest {
     }
 
     @Before
-    public void setup() {
+    public void setup() throws FileNotFoundException {
         String[] args = new String[] { "", "4", "1", "2", "2", "1", "1", "100", "2000", "playerA", "playerB" };
 
         engine = new GameEngine();
